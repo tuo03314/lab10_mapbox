@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Load data from an external GeoJSON file</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+ 
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoidHVvMDMzMTQiLCJhIjoiY2w5cm1wYjhoMGhuOTQwcW12Z3NqeTg0diJ9.2mdcwzzkz5oZQ4-ym4K4Zw';
+    //  constant; kind of basemap
+	const map = new mapboxgl.Map({
+		container: 'map', // container ID
+		style: 'mapbox://styles/mapbox/streets-v11', // style URL
+		zoom: 10, // starting zoom
+		center: [-75.15483081704296,39.98771088576627] // starting center
+	});
+	
+    // load will run the following code
+	map.on('load', () => {
+		map.addSource('bloodlead', {
+			type: 'geojson',
+			// Use a URL for the value for the `data` property.
+			data: 'blood_lead.geojson'
+		});
+
+		// Add a new layer to visualize the polygon.
+		map.addLayer({
+			'id': 'bloodlead-polygon',
+			'type': 'fill',
+			'source': 'bloodlead', // reference the data source
+			'layout': {},
+			'paint': {
+				'fill-color': {
+	              property: 'perc_5plus',
+	              stops: [
+	                [5, "#dee5e5"], 
+	                [10, "#e31a1c"],
+	                [15, "#fd8d3c"],
+	                [20, "#fecc5c"],
+	                [21, "#ffffb2"],
+	                [22, '#33a02c']
+	              ]
+				}, // blue color fill
+				'fill-opacity': 0.5
+			}
+		});
+
+		map.addLayer({
+			'id': 'bloodlead-bound',
+			'type': 'line',
+			'source': 'bloodlead',
+			'paint': {'line-color': '#000',
+			'line-width': 1
+			}
+			});
+	});
+
+		// // Add a black outline around the polygon.
+		// map.addLayer({
+		// 'id': 'outline',
+		// 'type': 'line',
+		// 'source': 'bloodlead',
+		// 'layout': {},
+		// 'paint': {
+		// 'line-color': '#000',
+		// 'line-width': 3
+		// }
+		// });
+
+	// Create a default Marker and add it to the map.
+    const marker1 = new mapboxgl.Marker()
+        .setLngLat([-75.15483081704296,39.98771088576627])
+        .addTo(map);
+
+    // Create a default Marker, colored black, rotated 45 degrees.
+    const marker2 = new mapboxgl.Marker({ color: 'red', rotation: 45 })
+        .setLngLat([-75.222827, 39.926745])
+        .addTo(map);
+
+</script>
+ 
+</body>
+</html>
